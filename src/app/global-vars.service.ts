@@ -14,6 +14,7 @@ import { DomSanitizer } from "@angular/platform-browser";
 import { IdentityService } from "./identity.service";
 import { BithuntService, CommunityProject } from "../lib/services/bithunt/bithunt-service";
 import { LeaderboardResponse, PulseService } from "../lib/services/pulse/pulse-service";
+import { SearchCloutService, TrendingPost } from "../lib/services/searchclout/searchclout-service";
 import { RightBarCreatorsLeaderboardComponent } from "./right-bar-creators/right-bar-creators-leaderboard/right-bar-creators-leaderboard.component";
 import { HttpClient } from "@angular/common/http";
 
@@ -91,6 +92,7 @@ export class GlobalVarsService {
   topDiamondedLeaderboard: LeaderboardResponse[] = [];
   allCommunityProjectsLeaderboard: CommunityProject[] = [];
   topCommunityProjectsLeaderboard: CommunityProject[] = [];
+  trendingPostsLeaderboard: TrendingPost[] = [];
 
   // We track logged-in state
   loggedInUser: User;
@@ -765,6 +767,8 @@ export class GlobalVarsService {
   }
 
   updateLeaderboard(forceRefresh: boolean = false): void {
+    console.log("UPDATE LEADERBOARD CALLED! in Global-vars");
+
     const pulseService = new PulseService(this.httpClient, this.backendApi, this);
 
     if (this.topGainerLeaderboard.length === 0 || forceRefresh) {
@@ -772,6 +776,26 @@ export class GlobalVarsService {
     }
     if (this.topDiamondedLeaderboard.length === 0 || forceRefresh) {
       pulseService.getDiamondsReceivedLeaderboard().subscribe((res) => (this.topDiamondedLeaderboard = res));
+    }
+
+    if (this.trendingPostsLeaderboard.length === 0 || forceRefresh) {
+      console.log("Update trending posts list")
+      const searchcloutService = new SearchCloutService(this.httpClient);
+      // searchcloutService.getTrendingPosts().subscribe((res) => (this.trendingPostsLeaderboard = res));
+
+      searchcloutService.getTrendingPosts()
+        .toPromise()
+        .then(
+          (res) => {
+            console.log("Top Trending Posts in Global Var ", res)
+            this.trendingPostsLeaderboard = res
+            //return res;
+          },
+          (err) => {
+            console.error(this.backendApi.stringifyError(err));
+          }
+        );
+
     }
 
     if (this.topCommunityProjectsLeaderboard.length === 0 || forceRefresh) {

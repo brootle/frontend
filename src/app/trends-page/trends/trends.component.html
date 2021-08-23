@@ -37,6 +37,7 @@
   <simple-center-loader *ngIf="loading"></simple-center-loader>
 
     <div #uiScroll *uiScroll="let profileEntryResponse of datasource">
+
       <div class="row no-gutters px-15px border-bottom fs-15px"
            *ngIf="profileEntryResponse.Profile && !profileEntryResponse.User.IsBlacklisted && !profileEntryResponse.User.IsGraylisted"
       >

@@ -42,6 +42,12 @@ export class RightBarCreatorsComponent implements OnInit {
     poweredBy: { name: "BitHunt", link: "https://bithunt.com" },
   };
 
+  static POSTS: RightBarTabOption = {
+    name: "Top Trending Posts",
+    width: 188,
+    poweredBy: { name: "SearchClout", link: "https://search.tijn.club" },
+  };
+
   static ALL_TIME: RightBarTabOption = {
     name: "Top Creators All Time",
     width: 210,
@@ -52,6 +58,7 @@ export class RightBarCreatorsComponent implements OnInit {
     [RightBarCreatorsComponent.GAINERS.name]: RightBarCreatorsComponent.GAINERS,
     [RightBarCreatorsComponent.DIAMONDS.name]: RightBarCreatorsComponent.DIAMONDS,
     [RightBarCreatorsComponent.COMMUNITY.name]: RightBarCreatorsComponent.COMMUNITY,
+    [RightBarCreatorsComponent.POSTS.name]: RightBarCreatorsComponent.POSTS,
     [RightBarCreatorsComponent.ALL_TIME.name]: RightBarCreatorsComponent.ALL_TIME,
   };
 

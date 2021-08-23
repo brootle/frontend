@@ -4,6 +4,7 @@ import { BackendApiService } from "../../backend-api.service";
 import { HttpClient } from "@angular/common/http";
 import { PulseService } from "../../../lib/services/pulse/pulse-service";
 import { BithuntService } from "../../../lib/services/bithunt/bithunt-service";
+import { SearchCloutService } from "../../../lib/services/searchclout/searchclout-service";
 import { RightBarCreatorsComponent, RightBarTabOption } from "../../right-bar-creators/right-bar-creators.component";
 import { IAdapter, IDatasource } from "ngx-ui-scroll";
 import { InfiniteScroller } from "src/app/infinite-scroller";
@@ -25,6 +26,8 @@ export class TrendsComponent implements OnInit {
     (tab: string) => tab !== RightBarCreatorsComponent.ALL_TIME.name
   );
   activeTab: string = RightBarCreatorsComponent.GAINERS.name;
+  //activeTab: string = RightBarCreatorsComponent.POSTS.name;
+
   activeRightTabOption: RightBarTabOption;
   selectedOptionWidth: string;
 
@@ -36,6 +39,7 @@ export class TrendsComponent implements OnInit {
 
   bithuntService: BithuntService;
   pulseService: PulseService;
+  searchcloutService: SearchCloutService;
 
   constructor(
     public globalVars: GlobalVarsService,
@@ -52,12 +56,15 @@ export class TrendsComponent implements OnInit {
     });
     this.bithuntService = new BithuntService(this.httpClient, this.backendApi, this.globalVars);
     this.pulseService = new PulseService(this.httpClient, this.backendApi, this.globalVars);
+    this.searchcloutService = new SearchCloutService(this.httpClient);
     this.selectTab();
   }
 
   selectTab() {
     const rightTabOption = RightBarCreatorsComponent.chartMap[this.activeTab];
     this.activeRightTabOption = rightTabOption;
+    console.log("this.activeRightTabOption: ", this.activeRightTabOption);
+    console.log("this.globalVars.trendingPostsLeaderboard: ", this.globalVars);
     this.selectedOptionWidth = rightTabOption.width + "px";
     this.loading = true;
     this.datasource.adapter.reset().then(() => (this.loading = false));
@@ -68,6 +75,7 @@ export class TrendsComponent implements OnInit {
   }
 
   getPage(page: number) {
+    console.log("this.activeTab: ", this.activeTab);
     if (this.activeTab === RightBarCreatorsComponent.GAINERS.name) {
       this.loadingNextPage = page !== 0;
       return this.pulseService
@@ -113,6 +121,21 @@ export class TrendsComponent implements OnInit {
         end = this.globalVars.allCommunityProjectsLeaderboard.length;
       }
       return this.globalVars.allCommunityProjectsLeaderboard.slice(TrendsComponent.PAGE_SIZE * page, end);
+    }
+    if (this.activeTab === RightBarCreatorsComponent.POSTS.name) {
+      console.log("GET TRENDING POSTS....");
+      return this.searchcloutService
+        .getTrendingPosts()
+        .toPromise()
+        .then(
+          (res) => {
+            console.log("Top Trending Posts: ", res)
+            return res;
+          },
+          (err) => {
+            console.error(this.backendApi.stringifyError(err));
+          }
+        );
     }
   }
 
